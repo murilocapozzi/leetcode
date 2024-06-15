@@ -2,74 +2,22 @@ class Solution:
     def longestOnes(self, nums: list[int], k: int) -> int:
         
 
-        # PRECISA-SE DE OTIMIZAÇÃO!
+        longestPath, i, currentPath = 0, 0, 0
 
+        for j in range(len(nums)):
 
-        longestPath = 0
-        i = 0
+            currentPath += nums[j]
 
-        while i < len(nums):
+            # "j - i" é o tamanho da janela de análise
+            # currentPath, caminho atual, representa a soma dos valores de 1's achados dentro de j - i
 
-            # Novo caminho para explorar começando em i
-            currentPath = 1
-            # Usos de flips, não pode ultrapassar k por caminho
-            flips = 0
-            last_flip = -1
-            last_following_ones_by_j = 0
-            
-            while i < len(nums) and nums[i] == 0: i += 1
-
-            if i >= len(nums):
-                currentPath = 0
-                before_i = i - 1
-                while before_i >= 0 and nums[before_i] == 0 and flips < k:
-                    flips += 1
-                    currentPath += 1
-                    before_i -= 1
-
-                longestPath = max(currentPath, longestPath)
-                break
-
-
-            j = i + 1
-            while j < len(nums) and nums[j] == 1:
-                j += 1
-                currentPath += 1
-            
-            last_following_ones_by_j = j
-
-
-            while j < len(nums):
-
-                # Se ainda houver flips, tentará substituir para acrescentar no caminho
-                if nums[j] == 0 and flips >= k: break
-                if nums[j] == 0 and flips < k:
-                    flips += 1
-                    last_flip = j
-
-                currentPath += 1
-                j += 1
-            
-            # Caso tenha acabado o array (j == len(nums)) e flips < k, tenta criar caminho de i - 1 para trás
-            before_i = i - 1
-            while before_i >= 0 and nums[before_i] == 0 and flips < k:
-                flips += 1
-                currentPath += 1
-                before_i -= 1
-
-            longestPath = max(currentPath, longestPath)
-
-            if flips == 0 or last_flip == j + k:
-                i = j + k
+            # Se esse tamanho, diminuído do caminho atual mais 1 for menor ou igual a k
+                # Então representa um caminho possivelmente maior -> atualiza longestPath, o maior caminho visto
+            # Se não, o ponteiro da esquerda é movido e retira-se do caminho atual
+            if j - i - currentPath + 1 <= k:
+                longestPath = max(longestPath, j - i + 1)
             else:
-                i = last_following_ones_by_j
+                currentPath -= nums[i]
+                i += 1
 
         return longestPath
-    
-
-nums = [1,0,0,1,0,0,1,0,1,1, 1,1,0,1,1,1,1,0,1,1, 1,1,1,1,0,1,1,1,0,0, 1,1,1,0,0,1,0,1,0,0, 1,0,0,1,1]
-k = 9
-
-output = Solution().longestOnes(nums, k)
-
-print(output)

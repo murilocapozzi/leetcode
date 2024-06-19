@@ -1,57 +1,40 @@
 class Solution:
+    def canMakeBouquets(self, bloomDay: list[int], m: int, k: int, day: int) -> bool:
+        
+        # Retorna se podem ser feitos 'm' buquês até 'day'
+        bouquets = flowers = 0
+        
+        for b in bloomDay:
+            if b <= day:
+                flowers += 1
+                
+                # Se existem 'k' flores que brotaram consecutivas, é possível fazer um buquê
+                # 'flowers' zera se fez um buquê ou se a sequência parou sem sucesso
+                if flowers == k:
+                    bouquets += 1
+                    flowers = 0
+            else:
+                flowers = 0
+                
+            if bouquets >= m:
+                return True
+    
+        return False
+    
     def minDays(self, bloomDay: list[int], m: int, k: int) -> int:
         
+        # Se 'm * k' ultrapassa o próprio vetor 'bloomDay', não é possível realizar a lógica, -1
         if m * k > len(bloomDay): return -1
         
-        minDay, maxDay = min(bloomDay), max(bloomDay)
-
-        for day in range(minDay, maxDay + 1, 1):
+        # Busca binária pelo dia que é possível encontrar 'm' buquês
+        low, high = min(bloomDay), max(bloomDay)
+        
+        while low < high:
+            mid = (low + high) // 2
             
-            if day not in bloomDay:
-                continue
-
-            for i in range(len(bloomDay)):
-                if bloomDay[i] == day: bloomDay[i] = 'x'
-                    
-            substrings = []
-            i = 0
-            while i < len(bloomDay):
+            if self.canMakeBouquets(bloomDay, m, k, mid):
+                high = mid
+            else:
+                low = mid + 1
                 
-                while i < len(bloomDay) and bloomDay[i] != 'x': i += 1
-                    
-                if i >= len(bloomDay) or bloomDay[i] != 'x': break
-                    
-                j = i
-                while j < len(bloomDay) and bloomDay[j] == 'x':
-                    if j - i + 1 >= k:
-                        break
-                    j += 1
-                
-                if j < len(bloomDay) and bloomDay[j] == 'x':
-                    substrings.append(j - i + 1)
-                    i = j + 1
-                else:
-                    substrings.append(j - i)
-                    i = j
-                
-            if len(substrings) >= m:
-                bouquets = 0
-                for adjFlowers in substrings:
-                    if adjFlowers >= k:
-                        bouquets += 1
-                        
-                if bouquets >= m:
-                    return day
-            
-        return -1
-    
-   
-bloomDay = [1,10,2,9,3,8,4,7,5,6]
-m = 4
-k = 2
-
-
-
-output = Solution().minDays(bloomDay, m, k)
-
-print(output)
+        return low

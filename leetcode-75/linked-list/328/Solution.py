@@ -30,5 +30,34 @@ class Solution:
         :rtype: ListNode
         """
         
-        prev = None
-        p = head
+        # Tempo: O(N) -- percorre apenas uma vez
+        # Espaço: O(1) -- cria-se apenas ponteiros para os nós
+        
+        # Se a lista possui tamanho 1 ou 2, já está correto
+        if not head or not head.next: return head
+
+        # Ponteiro que irá percorrer na (odd)head
+        odd = head
+        
+        # Cria uma segunda cabeça, que irá manter os pares (even)
+        evenHead = head.next
+
+        # Ponteiro que irá percorrer na evenHead
+        even = evenHead
+
+
+        # Percorre a head e troca aos pares os ponteiros
+        # O próximo do odd insere na even
+        # O próximo do even insere no odd
+        while odd.next and even.next:
+            odd.next = even.next
+            odd = odd.next
+
+            even.next = odd.next
+            even = even.next
+
+
+        # Ao final, concatena evenHead no final da odd
+        odd.next = evenHead
+
+        return head

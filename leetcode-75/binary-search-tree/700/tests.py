@@ -19,6 +19,4 @@ def test_example2():
     
     output = Solution().treeToArr(Solution().searchBST(root, val))
     
-    print(Solution().searchBST(root, val))
-    
     assert output == []
